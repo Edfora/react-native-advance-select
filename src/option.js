@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, Component, View, Text } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -18,18 +18,28 @@ class Option extends React.Component {
   }
 
   render() {
-    const { style, styleText } = this.props;
+    const { optionContainerStyle, optionNumberOfLines, optionTextStyle, optionText } = this.props;
 
     return (
-      <View style={[styles.container, style]}>
-        <Text style={styleText}>{this.props.children}</Text>
+      <View style={[styles.container, optionContainerStyle]}>
+        <Text numberOfLines={optionNumberOfLines} style={optionTextStyle}>{optionText}</Text>
       </View>
     );
   }
 }
 
 Option.propTypes = {
-  children: PropTypes.string.isRequired
+  optionText: PropTypes.string,
+  optionTextStyle: PropTypes.object,
+  optionContainerStyle: PropTypes.object,
+  optionNumberOfLines: PropTypes.number
 };
+
+Option.defaultProps = {
+  optionText: '',
+  optionTextStyle: {},
+  optionContainerStyle: {},
+  optionNumberOfLines: 1
+}
 
 module.exports = Option;

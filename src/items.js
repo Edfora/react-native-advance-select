@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import {
   Dimensions,
   StyleSheet,
-  Component,
   View,
   ScrollView,
   TouchableWithoutFeedback,
@@ -14,6 +13,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 
 const Overlay = require("./overlay");
+const Option = require("./option");
 
 const window = Dimensions.get("window");
 
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     borderColor: "#BDBDC1",
     borderWidth: 2 / window.scale,
     backgroundColor: "white",
-    opacity: 0.9
+    opacity: 1
   }
 });
 
@@ -36,34 +36,47 @@ class Items extends React.Component {
   render() {
     const {
       items,
-      onPress,
+      onItemPress,
       width,
       height,
       location,
       show,
       handleClose,
       onChangeText,
-      placeholder
+      placeholder,
+      search,
+      value,
+      labelExtractor,
+      keyExtractor,
+      selectedKey,
+      optionNumberOfLines,
+      optionTextStyle,
+      selectedRowStyle,
+      isDarkMode,
+      customRightIconView
     } = this.props;
     let x = 0;
     let y = 0;
+    const backgroundColor = isDarkMode ? '#000000' : '#ffffff'
     if (location) {
       x = location.fx;
       y = location.fy;
     }
 
     const renderedItems = items.map((item, idx) => {
+
+      const isSelected = (keyExtractor(item) === selectedKey) || false
+      const itemLabel = `${labelExtractor(item)}` || ''
       return item.section ? (
-        <View style={{ padding: 5 }} key={idx}>
-          <Text style={{ fontWeight: "bold" }}>{item.label}</Text>
+        <View style={{ padding: 10 }} key={idx}>
+          <Text style={{ fontWeight: "bold", }}>{itemLabel}</Text>
         </View>
       ) : (
         <TouchableWithoutFeedback
-          onPress={() => onPress(item.key, item.label)}
-          key={idx}
-        >
-          <View style={{ padding: 5 }}>
-            <Text style={{ marginLeft: 20 }}>{item.label}</Text>
+          onPress={() => onItemPress(item, idx)}
+          key={idx}>
+          <View style={[{ padding: 10 }, isSelected && selectedRowStyle]}>
+            <Text style={[{ marginLeft: 5 }, optionTextStyle]}>{itemLabel}</Text>
           </View>
         </TouchableWithoutFeedback>
       );
@@ -76,42 +89,60 @@ class Items extends React.Component {
         visible={show}
         onRequestClose={handleClose}
       >
-        <Overlay onPress={handleClose} />
-        <View style={[styles.container, { left: x, top: y, width: width }]}>
-          <View
-            style={{
-              height: height,
-              borderBottomColor: "#BDBDC1",
-              borderBottomWidth: 2 / window.scale
-            }}
-          >
+        <Overlay onOverlayPress={handleClose} />
+        <View style={[styles.container, { left: x, top: y, backgroundColor: backgroundColor }]}>
+          <TouchableWithoutFeedback onPress={handleClose}>
             <View
               style={{
-                flex: 1,
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                alignItems: "center"
+                height: height,
+                borderBottomColor: "#BDBDC1",
+                borderBottomWidth: 2 / window.scale
               }}
             >
-              <Icon
-                name="ios-search"
-                style={{
-                  color: "black",
-                  fontSize: 26,
-                  marginLeft: 5,
-                  flex: 1
-                }}
-              />
-              <TextInput
-                onChangeText={onChangeText}
-                placeholder={placeholder}
-                underlineColorAndroid="transparent"
-                style={{ flex: 5, margin: 0, padding: 0 }}
-              />
+              {
+                search ? (
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                      alignItems: "center"
+                    }}
+                  >
+                    <Icon
+                      name="ios-search"
+                      style={{
+                        color: "black",
+                        fontSize: 26,
+                        marginLeft: 5,
+                        flex: 1
+                      }}
+                    />
+                    <TextInput
+                      onChangeText={onChangeText}
+                      placeholder={placeholder}
+                      underlineColorAndroid="transparent"
+                      style={{ flex: 5, margin: 0, padding: 0 }}
+                    />
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                      alignItems: "center"
+                    }}
+                  >
+                    <Option optionTextStyle={optionTextStyle} optionNumberOfLines={optionNumberOfLines} optionText={value} />
+                    {customRightIconView()}
+                  </View>
+                )
+              }
             </View>
-          </View>
+          </TouchableWithoutFeedback>
           <ScrollView
-            style={{ width: width - 2, height: height * 3 }}
+            style={{ width }}
             automaticallyAdjustContentInsets={false}
             bounces={false}
           >
@@ -124,13 +155,29 @@ class Items extends React.Component {
 }
 
 Items.propTypes = {
-  onPress: PropTypes.func
+  onItemPress: PropTypes.func,
+  search: PropTypes.bool,
+  value: PropTypes.string,
+  labelExtractor: PropTypes.func,
+  keyExtractor: PropTypes.func,
+  selectedKey: PropTypes.oneOfType([ PropTypes.string, PropTypes.number ]),
+  optionNumberOfLines: PropTypes.number,
+  optionTextStyle: PropTypes.object,
+  selectedRowStyle: PropTypes.object
 };
 
 Items.defaultProps = {
   width: 0,
   height: 0,
-  onPress: () => {}
+  onItemPress: () => {},
+  search: false,
+  value: '',
+  keyExtractor: (item) => item.key || '',
+  labelExtractor: (item) => item.label || '',
+  selectedKey: '',
+  optionNumberOfLines: 1,
+  optionTextStyle: {},
+  selectedRowStyle: { backgroundColor: '#D1D1D6FF' }
 };
 
 module.exports = Items;
