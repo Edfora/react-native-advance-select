@@ -23,8 +23,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderColor: "#BDBDC1",
     borderWidth: 2 / window.scale,
-    backgroundColor: "white",
-    opacity: 1
+    opacity: 0.9
   }
 });
 
@@ -52,30 +51,28 @@ class Items extends React.Component {
       optionNumberOfLines,
       optionTextStyle,
       selectedRowStyle,
-      isDarkMode,
-      customRightIconView
+      optionsViewStyle
     } = this.props;
     let x = 0;
     let y = 0;
-    const backgroundColor = isDarkMode ? '#000000' : '#ffffff'
     if (location) {
       x = location.fx;
       y = location.fy;
     }
 
     const renderedItems = items.map((item, idx) => {
-
       const isSelected = (keyExtractor(item) === selectedKey) || false
       const itemLabel = `${labelExtractor(item)}` || ''
       return item.section ? (
-        <View style={{ padding: 10 }} key={idx}>
-          <Text style={{ fontWeight: "bold", }}>{itemLabel}</Text>
+        <View style={{ padding: 5 }} key={idx}>
+          <Text style={{ fontWeight: "bold" }}>{itemLabel}</Text>
         </View>
       ) : (
         <TouchableWithoutFeedback
           onPress={() => onItemPress(item, idx)}
-          key={idx}>
-          <View style={[{ padding: 10 }, isSelected && selectedRowStyle]}>
+          key={idx}
+        >
+          <View style={[{ padding: 5 }, isSelected && selectedRowStyle]}>
             <Text style={[{ marginLeft: 5 }, optionTextStyle]}>{itemLabel}</Text>
           </View>
         </TouchableWithoutFeedback>
@@ -90,7 +87,7 @@ class Items extends React.Component {
         onRequestClose={handleClose}
       >
         <Overlay onOverlayPress={handleClose} />
-        <View style={[styles.container, { left: x, top: y, backgroundColor: backgroundColor }]}>
+        <View style={[styles.container, { left: x, top: y }]}>
           <TouchableWithoutFeedback onPress={handleClose}>
             <View
               style={{
@@ -135,14 +132,13 @@ class Items extends React.Component {
                     }}
                   >
                     <Option optionTextStyle={optionTextStyle} optionNumberOfLines={optionNumberOfLines} optionText={value} />
-                    {customRightIconView()}
                   </View>
                 )
               }
             </View>
           </TouchableWithoutFeedback>
           <ScrollView
-            style={{ width }}
+            style={[{ width }, optionsViewStyle]}
             automaticallyAdjustContentInsets={false}
             bounces={false}
           >

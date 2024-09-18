@@ -106,7 +106,7 @@ class Select extends React.Component {
       showCustomRightIconView,
       customRightIconView,
       selectedRowStyle,
-      isDarkMode
+      optionsViewStyle
     } = this.props;
 
     const widthForView = (this.state.viewWidth) ? this.state.viewWidth : width
@@ -186,6 +186,7 @@ class Select extends React.Component {
               const label = `${labelExtractor(item)}` || ''
               return regex.test(label);
             }) : data}
+            optionsViewStyle={optionsViewStyle}
             value={selectedItemLabel}
             search={search}
             show={this.state.show_options}
@@ -202,8 +203,6 @@ class Select extends React.Component {
             optionNumberOfLines={optionNumberOfLines}
             optionTextStyle={optionTextStyle}
             selectedRowStyle={selectedRowStyle}
-            isDarkMode={isDarkMode}
-            customRightIconView={customRightIconView}
           />
         )}
       </View>
